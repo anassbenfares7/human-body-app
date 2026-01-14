@@ -1,0 +1,46 @@
+{
+  "name": "human-body-app",
+  "version": "1.0.0",
+  "description": "An interactive 3D educational application for exploring the human body",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^1.11.0",
+    "prettier": "^3.1.0",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.18.0",
+    "@typescript-eslint/parser": "^6.18.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anassbenfares7/human-body-app.git"
+  },
+  "keywords": [
+    "3d",
+    "anatomy",
+    "education",
+    "human-body",
+    "threejs",
+    "react",
+    "medical"
+  ],
+  "author": "Anass Benfares",
+  "license": "MIT"
+}
