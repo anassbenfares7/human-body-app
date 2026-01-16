@@ -1,0 +1,22 @@
+{
+  "name": "@human-body/shared",
+  "version": "1.0.0",
+  "description": "Shared code and types for Human Body App",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "shared",
+    "types",
+    "constants"
+  ],
+  "author": "Anass Benfares",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}

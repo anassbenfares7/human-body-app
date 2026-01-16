@@ -1,0 +1,32 @@
+{
+  "name": "@human-body/mobile",
+  "version": "1.0.0",
+  "description": "Mobile application for Human Body App",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-native": "0.73.0",
+    "expo": "~50.0.0",
+    "three": "^0.160.0",
+    "@react-three/fiber": "^8.15.0",
+    "@react-three/drei": "^9.96.0",
+    "react-native-reanimated": "^3.6.0",
+    "react-native-gesture-handler": "^2.14.0",
+    "@react-navigation/native": "^6.1.0",
+    "@react-navigation/native-stack": "^6.9.0",
+    "@human-body/shared": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-native": "^0.73.0",
+    "typescript": "^5.3.0",
+    "@expo/webpack-config": "^19.0.0"
+  },
+  "private": true
+}
