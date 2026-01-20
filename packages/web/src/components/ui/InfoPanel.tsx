@@ -1,5 +1,5 @@
 import { useAppStore } from '@/store/useAppStore';
-import { ORGANS_DATA } from '@human-body/shared';
+import { ORGANS_DATA, BODY_SYSTEMS } from '@human-body/shared';
 import { X } from 'lucide-react';
 
 export default function InfoPanel() {
@@ -7,6 +7,7 @@ export default function InfoPanel() {
   const selectOrgan = useAppStore((state) => state.selectOrgan);
   
   const organ = ORGANS_DATA.find((o) => o.id === selectedOrgan);
+  const system = BODY_SYSTEMS.find(s => s.id === organ?.system);
   
   if (!organ) return null;
   
@@ -23,10 +24,29 @@ export default function InfoPanel() {
         {organ.name}
       </h2>
       
+      {/* System Badge */}
+      {system && (
+        <div className="mb-4">
+          <div className="flex items-center space-x-2">
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: system.color }}
+            />
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {system.name}
+            </span>
+          </div>
+        </div>
+      )}
+      
+      {/* Description */}
       <div className="mb-4">
-        <span className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-          {organ.system}
-        </span>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          Description
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {organ.info.description}
+        </p>
       </div>
       
       <div className="space-y-4">

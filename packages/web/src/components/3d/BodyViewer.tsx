@@ -1,14 +1,17 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
-import { Suspense, useState } from 'react';
+import { Suspense } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import BodyModel from './BodyModel';
-import SystemLayer from './SystemLayer';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import OrganGroup from './OrganGroup';
+import KeyboardControls from './KeyboardControls';
+import { BODY_SYSTEMS } from '@human-body/shared';
 
+/**
+ * BodyViewer - Main 3D Scene Canvas
+ * Phase 3.1: Multi-system rendering with OrganGroup components
+ */
 export default function BodyViewer() {
-  const { selectedGender, visibleSystems, viewMode } = useAppStore();
-  const [cameraPosition, setCameraPosition] = useState([0, 1.5, 3]);
+  const { viewMode, visibleSystems } = useAppStore();
 
   return (
     <div className="h-screen w-full">
@@ -18,22 +21,22 @@ export default function BodyViewer() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
           <pointLight position={[-10, -10, -5]} intensity={0.5} />
-          
+
           {/* Environment */}
           <Environment preset="studio" />
           <ContactShadows position={[0, -1, 0]} opacity={0.5} scale={10} blur={2} />
-          
+
           {/* Camera */}
-          <PerspectiveCamera makeDefault position={cameraPosition} fov={50} />
-          
-          {/* 3D Models */}
-          <BodyModel gender={selectedGender} />
-          
-          {/* System Layers */}
-          {visibleSystems.map((systemId) => (
-            <SystemLayer key={systemId} systemId={systemId} />
+          <PerspectiveCamera makeDefault position={[0, 1.5, 3]} fov={50} />
+
+          {/* PHASE 3.1: All Body Systems (10 systems, 41 organs) */}
+          {BODY_SYSTEMS.map(system => (
+            <OrganGroup
+              key={system.id}
+              systemId={system.id}
+            />
           ))}
-          
+
           {/* Camera Controls */}
           <OrbitControls
             enablePan={true}
@@ -43,13 +46,11 @@ export default function BodyViewer() {
             maxDistance={viewMode === 'macro' ? 10 : 2}
             target={[0, 1, 0]}
           />
+
+          {/* Keyboard Controls */}
+          <KeyboardControls />
         </Suspense>
       </Canvas>
-      
-      {/* Loading Overlay */}
-      <Suspense fallback={<LoadingSpinner />}>
-        <></>
-      </Suspense>
     </div>
   );
 }

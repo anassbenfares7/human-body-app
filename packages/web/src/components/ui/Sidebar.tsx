@@ -1,6 +1,8 @@
 import { useAppStore } from '@/store/useAppStore';
 import { BODY_SYSTEMS } from '@human-body/shared';
 import { useState } from 'react';
+import SystemControls from './SystemControls';
+import ModeIndicator from './ModeIndicator';
 
 export default function Sidebar() {
   const { visibleSystems, toggleSystem, setGender, selectedGender, viewMode, setViewMode } = useAppStore();
@@ -10,13 +12,17 @@ export default function Sidebar() {
     <aside className={`bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
     }`}>
-      <div className="p-4">
+      <div className="p-4 space-y-4">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="mb-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
         >
           {isCollapsed ? '→' : '←'}
         </button>
+        
+        {/* Phase 2 Components */}
+        <ModeIndicator />
+        <SystemControls />
       </div>
 
       {!isCollapsed && (
