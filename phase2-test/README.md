@@ -1,48 +1,72 @@
-# Phase 2: Anatomy Interaction Layer (Debug Mode Enabled)
+# Human Body 3D Visualization
 
-## Overview
+**A vanilla Three.js proof-of-concept for interactive anatomy exploration**
 
-Phase 2 introduces the Anatomy Interaction Layer, improving anatomical exploration and interaction logic. This phase focuses on functionality rather than visuals, implementing body systems, organ-to-system mapping, system toggling, isolation modes, and enhanced interaction feedback.
+> **Status:** Phase 2 Complete | Phase 3 Planned
+> **Geometry:** Placeholder primitives (spheres, boxes, cylinders) - NOT real organ models
 
-## Features
+---
 
-### Body Systems
-- **7 Body Systems:** Skeletal, Muscular, Nervous, Circulatory, Digestive, Respiratory, Urinary
-- **System Groups:** Each system has its own THREE.Group for organized scene structure
-- **Organ Mapping:** All organs are mapped to their respective systems
-- **Visibility Control:** Toggle systems on/off with checkboxes or keyboard shortcuts (1-7)
+## Quick Start
 
-### Interaction Modes
-1. **Normal Mode:** Default viewing mode with all visible systems shown
-2. **Focus Mode:** Camera focused on selected organ with smooth transitions
-3. **Isolate System Mode:** Only one system visible, all other systems hidden
-4. **Isolate Organ Mode:** Only one organ visible, all other organs hidden
+### Prerequisites
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Local web server (Python, Node.js, or any HTTP server)
 
-### Controls
+### Run Phase 2 Test Environment
 
-#### Keyboard Shortcuts
-- **F** - Toggle Focus Mode
-- **D** - Reset to Default (camera and selection)
-- **I** - Toggle Isolation Mode (cycles: none → system → organ → none)
-- **1-7** - Quick Toggle Systems
-- **Esc** - Cancel Selection
+```bash
+cd phase2-test
+python -m http.server 8000
+# Open http://localhost:8000
+```
 
-#### Mouse Controls
-- **Left Click + Drag** - Rotate camera
-- **Right Click + Drag** - Pan camera
-- **Scroll** - Zoom in/out
-- **Left Click on Organ** - Select organ (respects current mode)
-- **Hover on Organ** - Show hover feedback with tooltip
+### What You'll See
+- 5 organs represented as geometric primitives
+- 6 body systems (Skeletal, Muscular, Nervous, Circulatory, Digestive, Respiratory)
+- Interactive 3D scene with full camera controls
 
-### Visual Feedback
-- **Hover:** Scale up (1.05x), emissive glow, tooltip with organ name
-- **Selected:** Scale up (1.1x), emissive glow (intensity 0.4)
-- **Isolated:** Scale up (1.05x), emissive glow (intensity 0.3)
-- **Hidden:** Opacity 0.0
+---
+
+## Controls Reference
+
+### Mouse Controls
+
+| Action | Behavior |
+|--------|----------|
+| Left Click + Drag | Rotate camera around scene |
+| Right Click + Drag | Pan camera view |
+| Scroll Wheel | Zoom in/out |
+| Click Organ | Select organ (respects current mode) |
+| Hover Organ | Show highlight and tooltip |
+
+### Keyboard Controls
+
+| Key | Action |
+|-----|--------|
+| **F** | Toggle Focus Mode (camera focuses on selected organ) |
+| **D** | Reset camera and selection to default |
+| **I** | Cycle isolation mode (none -> system -> organ -> none) |
+| **1-6** | Toggle system visibility (see mapping below) |
+| **A** | Toggle all systems ON/OFF |
+| **Esc** | Cancel selection |
+
+### System Number Mapping
+
+| Number | System | Default State |
+|--------|--------|---------------|
+| 1 | Skeletal | Visible |
+| 2 | Muscular | Hidden |
+| 3 | Nervous | Visible |
+| 4 | Circulatory | Visible |
+| 5 | Digestive | Visible |
+| 6 | Respiratory | Visible |
+
+---
 
 ## Architecture
 
-### 3-Manager Architecture
+### 3-Manager Pattern
 
 ```
 InteractionManager (Coordinator)
@@ -52,263 +76,379 @@ InteractionManager (Coordinator)
     └── Manages: Selection, Hover, Highlight Effects
 ```
 
-### Manager Responsibilities
-
-#### SystemManager
-- Create and manage system groups in scene
-- Map organs to systems
-- Toggle system visibility and opacity
-- Handle isolation modes (system/organ)
-- Provide system and organ queries
-
-#### SelectionManager
-- Handle organ selection and deselection
-- Manage hover state and feedback
-- Apply highlight effects (selected/hovered/isolated)
-- Handle selection in different interaction modes
-- Restore original appearances
-
-#### InteractionManager
-- Coordinate all interactions between SystemManager and SelectionManager
-- Handle user input (mouse clicks, hover, keyboard)
-- Manage interaction state (mode, selection, isolation)
-- Route events to appropriate managers
-- Handle mode transitions (Normal/Focus/Isolation)
-
-## Data Structures
-
-### Organs Data
-- Extended from Phase 1 with `systemId` and `groupId` fields
-- 6 organs with placeholder geometry (sphere, cylinder, box)
-- Each organ has position, color, scale, and system reference
-
-### Body Systems Data
-- 7 body systems with colors and organ associations
-- Each system has visibility and opacity state
-- System groups are created and managed at runtime
-
-### Interaction State
-- Centralized state management for all interactions
-- Includes: selectedOrgan, hoveredOrgan, isFocusMode, isolationMode, visibleSystems
-
-## Scene Structure
+### Scene Hierarchy
 
 ```
 Scene
 └── BodyGroup (THREE.Group)
-    ├── SkeletalSystemGroup (THREE.Group)
-    ├── MuscularSystemGroup (THREE.Group)
-    ├── NervousSystemGroup (THREE.Group)
-    ├── CirculatorySystemGroup (THREE.Group)
-    ├── DigestiveSystemGroup (THREE.Group)
-    ├── RespiratorySystemGroup (THREE.Group)
-    └── UrinarySystemGroup (THREE.Group)
+    ├── SkeletalSystemGroup
+    ├── MuscularSystemGroup
+    ├── NervousSystemGroup
+    ├── CirculatorySystemGroup
+    ├── DigestiveSystemGroup
+    ├── RespiratorySystemGroup
+    └── [System Groups]
         └── OrganMeshes (THREE.Mesh)
 ```
 
-## File Structure
+### Data Flow
 
 ```
-phase2-test/
-├── index.html              # Updated with system controls and mode indicator
-├── main.js                 # Main entry point
-├── README.md               # This file
-└── src/
-    ├── managers/
-    │   ├── SystemManager.js
-    │   ├── SelectionManager.js
-    │   └── InteractionManager.js
-    ├── utils/
-    │   ├── EnhancedRaycaster.js
-    │   └── AnimationUtils.js
-    └── data/
-        ├── organsData.js
-        ├── systemsData.js
-        └── interactionState.js
+User Input (Mouse/Keyboard)
+        ↓
+InteractionManager (Routes events)
+        ↓
+┌───────────────┬────────────────┐
+▼               ▼                ▼
+SystemManager   SelectionManager  Camera
+                │
+                └── Organ Highlight Effects
 ```
 
-## Usage
+### Key Files
 
-### Running Phase 2
+| File | Purpose | Lines |
+|------|---------|-------|
+| `src/managers/InteractionManager.js` | Main coordinator, handles all user input | ~700 |
+| `src/managers/SystemManager.js` | Scene structure, system visibility | ~300 |
+| `src/managers/SelectionManager.js` | Selection state, visual feedback | ~250 |
+| `src/data/organsData.js` | 5 organ definitions (source of truth) | ~100 |
+| `src/data/systemsData.js` | 6 body systems with organ associations | ~80 |
+| `src/utils/EnhancedRaycaster.js` | Raycasting with visibility filtering | ~100 |
 
-1. Open `phase2-test/index.html` in a web browser
-2. The 3D scene will initialize with debug meshes for organs
-3. Use the UI controls to:
-   - Toggle body systems on/off
-   - Select organs by clicking on them
-   - Use keyboard shortcuts for quick access
-   - Cycle through interaction modes
+---
 
-### Debug Mode
+## Implemented Features
 
-Debug mode is **enabled by default** with detailed console logging:
-- Every manager logs initialization steps
-- Event handling logs all user interactions
-- State changes are logged with details
-- Camera positions and targets are logged
-- System and organ visibility is logged
-- All logs are prefixed with manager name for easy debugging
+### Phase 1: Core 3D Engine
 
-### Testing Features
+- [x] Three.js scene with professional OrbitControls
+- [x] Placeholder geometry for organs (spheres, cylinders, boxes)
+- [x] Basic organ selection with visual highlighting
+- [x] Camera focus animation on selected organ
+- [x] Smooth camera transitions with damping
+- [x] Info panel showing selected organ details
 
-1. **System Toggling:**
-   - Click checkboxes in the System Controls panel
-   - Use keyboard shortcuts 1-7
-   - Verify systems show/hide correctly
-   - Check console logs for system visibility changes
+### Phase 2: Anatomy Interaction Layer
 
-2. **Organ Selection:**
-   - Click on organs to select them
-   - Verify highlighting works correctly
-   - Check hover feedback
-   - Check console logs for selection state
+- [x] 6 body systems with independent visibility control
+- [x] Organ-to-system mapping
+- [x] System groups for organized scene structure
+- [x] Keyboard shortcuts for system toggling (1-6)
+- [x] Isolation modes (system-level and organ-level)
+- [x] Enhanced hover feedback with tooltips
+- [x] Mode indicator showing current interaction state
+- [x] Console logging with manager prefixes for debugging
 
-3. **Focus Mode:**
-   - Press F to toggle focus mode
-   - Verify camera focuses on selected organ
-   - Press F again to exit focus mode
-   - Check console logs for focus mode state
+### Visual Feedback States
 
-4. **Isolation Modes:**
-   - Press I to cycle through isolation modes
-   - Verify only selected system/organ is visible
-   - Press I again to cycle to next mode
-   - Check console logs for isolation mode state
+| State | Scale | Emissive | Opacity | Use Case |
+|-------|-------|----------|---------|----------|
+| Normal | 1.0x | 0.0 | 1.0 | Default visible organ |
+| Hovered | 1.05x | 0.2 | 1.0 | Mouse cursor over organ |
+| Selected | 1.1x | 0.4 | 1.0 | Organ clicked/selected |
+| Isolated | 1.05x | 0.3 | 1.0 | Only organ visible in isolate mode |
+| Hidden | 1.0x | - | 0.0 | Organ/system not visible |
 
-5. **Reset:**
-   - Press D to reset to default
-   - Verify camera returns to default position
-   - Verify selection is cleared
-   - Check console logs for reset operations
+---
 
-## Constraints
+## Technical Constraints
 
-- **Web only:** No backend, no mobile, no Micro/Nano
-- **Three.js vanilla:** No React Three Fiber, pure vanilla implementation
-- **Placeholder geometry:** Debug meshes (sphere, cylinder, box) for testing
-- **No UI polish:** Functional controls only, no fancy animations or styling
-- **Phase 1 preserved:** All Phase 1 behavior is maintained
+### Geometry Limitations
+**Current implementation uses placeholder primitives only** - these are NOT anatomically accurate models.
 
-## Technical Notes
+| ID | Name | System | Geometry | Position | Size |
+|----|------|--------|----------|----------|------|
+| brain | Brain | Nervous | Sphere | (0, 1.4, 0) | 0.22 |
+| lungs | Lungs | Respiratory | Cylinder | (0, 0.8, 0) | 0.25 |
+| heart | Heart | Circulatory | Sphere | (-0.2, 0.65, 0.15) | 0.18 |
+| liver | Liver | Digestive | Box | (0.2, 0.4, 0) | 0.22 |
+| stomach | Stomach | Digestive | Sphere | (-0.15, 0.3, 0) | 0.18 |
 
-### Raycasting
-- Enhanced raycaster with visibility filtering
-- Only intersects with visible objects
-- Respects parent group visibility
-- Checks material opacity
+### Technology Stack
+- **Three.js:** v0.160.0 (CDN, ES modules)
+- **JavaScript:** Vanilla ES6+ (no frameworks)
+- **Build:** None (direct browser execution)
 
-### Camera Controls
-- Professional Blender-style controls
-- Smooth orbit, fast zoom, intuitive pan
-- Damping enabled for smooth movement
-- Zoom limits adjusted for better organ visibility
+### Platform Support
+- Desktop web browsers only
+- No mobile support
+- No backend required
 
-### Animation
-- Smooth camera transitions with easing functions
-- Focus animations with cancelation support
-- No automatic camera reset during interaction
+---
 
-### Performance
-- Efficient scene traversals
-- Minimal raycasting operations
-- Optimized highlight management
-- Proper cleanup of animations
+## Interaction Modes
 
-## Migration from Phase 1
+### Normal Mode (Default)
+- All visible systems displayed
+- Click organs to select
+- Camera orbit/pan/zoom enabled
+- Hover shows tooltip
 
-### What Changed
-1. **Data Structure:**
-   - ORGANS_DATA: Added systemId and groupId fields
-   - Added BODY_SYSTEMS constant
-   - Added INTERACTION_STATE object
+### Focus Mode (Toggle with F)
+- Camera focuses on selected organ
+- Smooth animated transition
+- Press F again to exit
+- Requires a selected organ
 
-2. **Scene Structure:**
-   - Wrapped all organs in BodyGroup
-   - Created system groups
-   - Reorganized organ meshes into system groups
+### Isolate System Mode (Press I once)
+- Only selected system's organs visible
+- All other systems hidden
+- Press I again to cycle modes
+- Requires a selected organ in a system
 
-3. **Code Organization:**
-   - Extracted SystemManager class (includes visibility logic)
-   - Extracted SelectionManager class (includes highlight logic)
-   - Extracted InteractionManager class (coordinates both)
+### Isolate Organ Mode (Press I twice)
+- Only selected organ visible
+- All other organs hidden
+- Press I again to return to normal
+- Requires a selected organ
 
-4. **Interaction Logic:**
-   - Added system toggling
-   - Added isolation modes
-   - Enhanced hover feedback
-   - Improved raycasting
+---
 
-### What Stayed the Same
-1. **Phase 1 Core Features:**
-   - Three.js scene setup
-   - OrbitControls configuration
-   - Camera focus animation
-   - Basic organ selection
-   - Keyboard shortcuts (F, D)
-   - UI panels (info, selected organ)
+## Extending the Project
 
-2. **Phase 1 Behavior:**
-   - Camera controls (rotate, pan, zoom)
-   - Focus mode toggle (F key)
-   - Reset to default (D key)
-   - Organ selection highlighting
-   - Info panel display
+### Adding a New Organ
 
-## Next Steps
+Edit `src/data/organsData.js`:
 
-After Phase 2 completion:
+```javascript
+export const ORGANS_DATA = [
+  // ... existing organs
+  {
+    id: 'kidney',                     // Unique identifier
+    name: 'Kidney',                   // Display name
+    system: 'Urinary',                // System name
+    function: 'Filters blood',        // Description
+    meshName: 'Kidney',               // Three.js object name
+    position: { x: 0.15, y: 0.35, z: -0.1 },  // World position
+    color: 0x8B4513,                  // Hex color
+    originalColor: null,              // (reserved)
+    geometry: 'sphere',               // primitive type
+    size: 0.12,                       // base size
+    scale: { x: 1.0, y: 1.0, z: 1.0 }, // scaling
+    systemId: 'urinary',              // system reference
+    groupId: 'urinary-organs',        // group reference
+    visible: true,
+    opacity: 1.0
+  }
+];
+```
 
-1. **Phase 3:** Advanced interactions
-   - Multi-organ selection
-   - System relationships visualization
-   - Advanced camera behaviors
+### Adding a New Body System
 
-2. **Phase 4:** Content expansion
-   - More organs
-   - More systems
-   - Detailed organ information
+1. Edit `src/data/systemsData.js`:
 
-3. **Phase 5:** UI polish
-   - Better visual design
-   - Animations
-   - Responsive design
+```javascript
+export const BODY_SYSTEMS = [
+  // ... existing systems
+  {
+    id: 'urinary',                    // Unique ID
+    name: 'Urinary System',           // Display name
+    description: 'Filters waste from blood',
+    color: '#9b59b6',                 // System color
+    organs: ['kidney', 'bladder'],    // Associated organs
+    group: null,                      // (set at runtime)
+    visible: true,
+    opacity: 1.0
+  }
+];
+```
 
-## Known Limitations
+2. Update `index.html` to add the system toggle:
 
-1. **Placeholder Geometry:** Debug meshes are temporary and will be replaced with real GLB models
-2. **Limited Organs:** Only 6 organs are implemented in Phase 2
-3. **No Backend:** All data is client-side only
-4. **No Mobile:** Desktop web only
+```html
+<div class="system-toggle" data-system="urinary">
+    <input type="checkbox" id="urinary-toggle" checked>
+    <label for="urinary-toggle">7. Urinary</label>
+</div>
+```
+
+3. Update keyboard shortcuts in `src/managers/InteractionManager.js`
+
+### Customizing Visual Effects
+
+Edit `src/managers/SelectionManager.js` to adjust highlight parameters:
+
+```javascript
+// In applyHighlightEffect() method
+const effects = {
+  selected: {
+    scale: 1.1,        // Change selection scale
+    emissive: 0.4,     // Change glow intensity
+    duration: 300      // Animation duration (ms)
+  },
+  hovered: {
+    scale: 1.05,
+    emissive: 0.2
+  }
+};
+```
+
+### Adding New Interactions
+
+The pattern follows: Input -> InteractionManager -> SystemManager/SelectionManager
+
+```javascript
+// In src/managers/InteractionManager.js
+handleKeyPress(event) {
+  switch(event.key.toLowerCase()) {
+    case 'x':  // New interaction
+      this.handleNewInteraction();
+      break;
+  }
+}
+```
+
+---
+
+## Roadmap
+
+### Phase 3: Advanced Interactions (Planned)
+- Multi-organ selection with Shift+Click
+- System relationships visualization
+- Advanced camera behaviors (auto-rotate, cinematic transitions)
+- Context-aware help system
+
+### Phase 4: Content Expansion (Planned)
+- Replace placeholder geometry with real GLB models
+- Add more organs (50+ target)
+- Detailed organ information panels
+- Anatomical labels and markers
+
+### Phase 5: UI & UX Polish (Planned)
+- Modern UI component library
+- Responsive design for tablets
+- Loading screens and transitions
+- Accessibility improvements
+
+**Note:** The monorepo structure (packages/) mentioned in early planning is NOT implemented.
+
+---
+
+## Development & Debugging
+
+### Console Logging
+
+Each manager prefixes its logs for easy filtering:
+
+```
+[InteractionManager] Keyboard pressed: f
+[InteractionManager] Toggle focus mode
+[SystemManager] Setting visibility for nervous: false
+[SelectionManager] Organ selected: brain
+```
+
+### Debugging Commands
+
+Open browser console and run:
+
+```javascript
+// Check current state
+window.app?.interactionManager.state
+
+// Inspect all organs
+window.app?.systemManager.organs
+
+// Check system visibility
+window.app?.systemManager.systems
+
+// Manually trigger system toggle
+window.app?.interactionManager.toggleSystem('nervous')
+```
+
+### Performance Notes
+
+- Scene traversal: O(n) where n = number of organs
+- Raycasting: O(m) where m = visible objects only
+- Animation: Uses requestAnimationFrame, ~60fps target
+- Memory: No explicit cleanup needed for current scale
+
+---
 
 ## Troubleshooting
 
-### Common Issues
+### Organs not visible
 
-1. **Organs not visible:**
-   - Check if system is toggled on
-   - Check if organ is in isolation mode
-   - Verify system group visibility
+**Check:**
+1. Is the organ's system toggled on? (Press 1-6 or use checkboxes)
+2. Are you in isolation mode? (Press I to cycle out)
+3. Is the organ in the scene? (Check console logs during init)
 
-2. **Selection not working:**
-   - Check console for errors
-   - Verify raycaster is initialized
-   - Check if organ is selectable
+**Debug:**
+```javascript
+// Check system state
+console.log(window.app?.systemManager.systems)
+```
 
-3. **Camera not focusing:**
-   - Verify focus mode is on
-   - Check if organ is selected
-   - Verify camera animation is not blocked
+### Selection not working
 
-4. **UI not updating:**
-   - Check if DOM elements exist
-   - Verify element IDs match
-   - Check for JavaScript errors
+**Check:**
+1. Is JavaScript enabled? (Check browser console for errors)
+2. Is the organ visible? (Hidden organs can't be selected)
+3. Is raycaster working? (Hover should show tooltip)
 
-## Credits
+**Debug:**
+```javascript
+// Check selection state
+console.log(window.app?.selectionManager.state)
+```
 
-Phase 2 implementation based on approved technical plan in `plans/phase2-anatomy-interaction-layer.md`
+### Camera not focusing
 
-Architecture: Simplified 3-manager design
-- SystemManager: Scene & Visibility
-- SelectionManager: Selection & Highlight
-- InteractionManager: Coordination & User Input
+**Check:**
+1. Is an organ selected? (Focus requires selection)
+2. Is focus mode enabled? (Press F to toggle)
+3. Is camera animation blocked? (Check for animation conflicts)
+
+**Debug:**
+```javascript
+// Check interaction state
+console.log(window.app?.interactionManager.state)
+```
+
+### System toggles not updating
+
+**Check:**
+1. Do checkbox IDs match system IDs? (Check index.html)
+2. Are event listeners attached? (Check console for errors)
+3. Is SystemManager initialized? (Check init logs)
+
+---
+
+## Project Structure
+
+```
+phase2-test/
+├── index.html                  # UI structure, keyboard shortcuts
+├── main.js                     # Entry point, initialization
+├── README.md                   # This file
+└── src/
+    ├── managers/
+    │   ├── InteractionManager.js   # Main coordinator
+    │   ├── SystemManager.js        # Scene & visibility
+    │   └── SelectionManager.js     # Selection & highlights
+    ├── utils/
+    │   ├── EnhancedRaycaster.js    # Visibility-aware raycasting
+    │   └── AnimationUtils.js       # Camera animations
+    └── data/
+        ├── organsData.js           # 5 organ definitions
+        ├── systemsData.js          # 6 body systems
+        └── interactionState.js     # Shared state constants
+```
+
+### Architectural Decisions
+
+**Why 3 managers?**
+- **Separation of concerns:** Each manager has a single responsibility
+- **Testability:** Managers can be tested in isolation
+- **Maintainability:** Changes to visibility don't affect selection logic
+
+**Why centralized state?**
+- **Predictability:** Single source of truth prevents state drift
+- **Debugging:** State inspection is straightforward
+- **Mode management:** Interaction modes require global coordination
+
+**Why placeholder geometry?**
+- **Rapid prototyping:** Test interactions without waiting for assets
+- **Performance:** Simple geometry loads instantly
+- **Clarity:** Makes it obvious this is a proof-of-concept

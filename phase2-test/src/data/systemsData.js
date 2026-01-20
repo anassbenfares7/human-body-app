@@ -64,16 +64,7 @@ export const BODY_SYSTEMS = [
     visible: true,
     opacity: 1.0
   },
-  {
-    id: 'urinary',
-    name: 'Urinary System',
-    description: 'Filters blood and removes waste',
-    color: '#00cec9',
-    organs: ['kidneys', 'bladder', 'ureters', 'urethra'],
-    group: null,
-    visible: true,
-    opacity: 1.0
-  }
+  // Urinary system removed for visual sanity (kidneys removed)
 ];
 
 // Create system color mapping for quick lookup

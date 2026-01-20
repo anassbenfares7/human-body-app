@@ -34,9 +34,9 @@ import { BODY_SYSTEMS } from './src/data/systemsData.js';
 let scene, camera, renderer, controls;
 let interactionManager = null;
 
-// Default camera settings
-const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 0.8, 2.5);
-const DEFAULT_TARGET = new THREE.Vector3(0, 0.4, 0);
+// Default camera settings (adjusted for new organ layout: y=0.3 to y=1.4)
+const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 0.85, 3.0);
+const DEFAULT_TARGET = new THREE.Vector3(0, 0.85, 0);
 const MIN_ZOOM_DISTANCE = 0.3;
 const MAX_ZOOM_DISTANCE = 15;
 

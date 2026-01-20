@@ -19,9 +19,9 @@ export class InteractionManager {
     this.organsData = organsData;
     this.systemsData = systemsData;
     
-    // Default camera settings
-    this.DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 0.8, 2.5);
-    this.DEFAULT_TARGET = new THREE.Vector3(0, 0.4, 0);
+    // Default camera settings (adjusted for new organ layout: y=0.3 to y=1.4)
+    this.DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 0.85, 3.0);
+    this.DEFAULT_TARGET = new THREE.Vector3(0, 0.85, 0);
     
     // Initialize managers (will be set in initialize())
     this.systemManager = null;
@@ -86,11 +86,11 @@ export class InteractionManager {
         );
       }
 
-      // Create material with improved appearance
+      // Create material with matte, anatomical appearance
       const material = new THREE.MeshStandardMaterial({
-        color: 0xcccccc,
-        metalness: 0.2,
-        roughness: 0.6,
+        color: organ.color,
+        metalness: 0.0,
+        roughness: 0.85,
         flatShading: false,
       });
 
@@ -141,7 +141,7 @@ export class InteractionManager {
     window.addEventListener('resize', () => this.onWindowResize());
 
     // System toggle checkboxes
-    const systemIds = ['skeletal', 'muscular', 'nervous', 'circulatory', 'digestive', 'respiratory', 'urinary'];
+    const systemIds = ['skeletal', 'muscular', 'nervous', 'circulatory', 'digestive', 'respiratory'];
     systemIds.forEach(systemId => {
       const checkbox = document.getElementById(`${systemId}-toggle`);
       if (checkbox) {
@@ -253,10 +253,10 @@ export class InteractionManager {
       this.toggleAllSystems();
     }
 
-    // 1-7 keys - Quick toggle system
+    // 1-6 keys - Quick toggle system
     const keyNum = parseInt(event.key);
-    if (keyNum >= 1 && keyNum <= 7) {
-      const systemIds = ['skeletal', 'muscular', 'nervous', 'circulatory', 'digestive', 'respiratory', 'urinary'];
+    if (keyNum >= 1 && keyNum <= 6) {
+      const systemIds = ['skeletal', 'muscular', 'nervous', 'circulatory', 'digestive', 'respiratory'];
       const systemId = systemIds[keyNum - 1];
       if (systemId) {
         this.toggleSystemQuick(systemId);
@@ -609,7 +609,7 @@ export class InteractionManager {
    * Update system toggle UI for all systems
    */
   updateAllSystemToggleUIs() {
-    const systemIds = ['skeletal', 'muscular', 'nervous', 'circulatory', 'digestive', 'respiratory', 'urinary'];
+    const systemIds = ['skeletal', 'muscular', 'nervous', 'circulatory', 'digestive', 'respiratory'];
     systemIds.forEach(systemId => {
       const isVisible = this.systemManager.isSystemVisible(systemId);
       this.updateSystemToggleUIFromState(systemId, isVisible);
