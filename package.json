@@ -4,7 +4,9 @@
   "description": "An interactive 3D educational application for exploring the human body",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/web",
+    "packages/mobile",
+    "packages/shared"
   ],
   "scripts": {
     "dev": "turbo run dev --parallel",
