@@ -1,9 +1,9 @@
 /**
- * Phase 2 Body Systems Data
+ * Body Systems Data
  * 6 body systems with colors and organ associations
  */
 
-export interface Phase2System {
+export interface System {
   id: string;
   name: string;
   description: string;
@@ -13,7 +13,7 @@ export interface Phase2System {
   opacity: number;
 }
 
-export const PHASE2_SYSTEMS: Phase2System[] = [
+export const SYSTEMS: System[] = [
   {
     id: 'skeletal',
     name: 'Skeletal System',
@@ -71,13 +71,13 @@ export const PHASE2_SYSTEMS: Phase2System[] = [
 ];
 
 // Create system color mapping
-export const SYSTEM_COLORS = PHASE2_SYSTEMS.reduce((acc, system) => {
+export const SYSTEM_COLORS = SYSTEMS.reduce((acc, system) => {
   acc[system.id] = system.color;
   return acc;
 }, {} as Record<string, string>);
 
 // Create system-to-organs mapping
-export const SYSTEM_TO_ORGANS_MAP = PHASE2_SYSTEMS.reduce((acc, system) => {
+export const SYSTEM_TO_ORGANS_MAP = SYSTEMS.reduce((acc, system) => {
   acc[system.id] = system.organs;
   return acc;
 }, {} as Record<string, string[]>);

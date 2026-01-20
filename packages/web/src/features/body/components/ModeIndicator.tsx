@@ -1,13 +1,13 @@
 /**
- * Phase 2 Mode Indicator Component
+ * Mode Indicator Component
  * Shows current interaction mode (Normal, Focus, Isolate System, Isolate Organ)
- * Tailwind-styled UI matching vanilla Phase 2 behavior
+ * Tailwind-styled UI
  */
 
-import { usePhase2Store } from '@/store/usePhase2Store';
+import { useBodyStore } from '../store/useBodyStore';
 
-export default function Phase2ModeIndicator() {
-  const { isFocusMode, isolationMode } = usePhase2Store();
+export function ModeIndicator() {
+  const { isFocusMode, isolationMode } = useBodyStore();
 
   const getInteractionMode = () => {
     if (isFocusMode) return 'Focus';

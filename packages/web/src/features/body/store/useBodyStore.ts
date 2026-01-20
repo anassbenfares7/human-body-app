@@ -1,19 +1,20 @@
 /**
- * Phase 2 Store
- * Zustand store matching vanilla Phase 2 interaction state
+ * Body Store
+ * Zustand store for body interaction state
  */
 
 import { create } from 'zustand';
-import { PHASE2_ORGANS } from '../data/phase2Organs';
-import { PHASE2_SYSTEMS, SYSTEM_COLORS } from '../data/phase2Systems';
+import { ORGANS } from '../data/organs';
+import { SYSTEMS, SYSTEM_COLORS } from '../data/systems';
 
-// Interaction modes matching vanilla Phase 2
+// Interaction modes
 export type IsolationMode = 'none' | 'system' | 'organ';
 
 interface InteractionState {
-  selectedOrgan: PHASE2_ORGANS[number] | null;
-  hoveredOrgan: PHASE2_ORGANS[number] | null;
+  selectedOrgan: ORGANS[number] | null;
+  hoveredOrgan: ORGANS[number] | null;
   isFocusMode: boolean;
+  isResetting: boolean;
   isolationMode: IsolationMode;
   isolatedSystemId: string | null;
   isolatedOrganId: string | null;
@@ -28,10 +29,10 @@ interface HighlightedOrgans {
   };
 }
 
-interface Phase2State extends InteractionState {
+interface BodyState extends InteractionState {
   // Organ and system data
-  organs: typeof PHASE2_ORGANS;
-  systems: typeof PHASE2_SYSTEMS;
+  organs: typeof ORGANS;
+  systems: typeof SYSTEMS;
   systemColors: typeof SYSTEM_COLORS;
 
   // Original materials map
@@ -49,6 +50,7 @@ interface Phase2State extends InteractionState {
   // Focus mode
   toggleFocusMode: () => void;
   focusOnOrgan: (organId: string) => void;
+  resetCamera: () => void;
 
   // Isolation mode
   toggleIsolationMode: () => void;
@@ -81,21 +83,22 @@ interface Phase2State extends InteractionState {
 }
 
 // Helper: Get organ by ID
-const getOrganById = (id: string) => PHASE2_ORGANS.find(o => o.id === id);
+const getOrganById = (id: string) => ORGANS.find(o => o.id === id);
 
 // Helper: Get system color
 const getSystemColor = (systemId: string) => SYSTEM_COLORS[systemId] || '#ffffff';
 
-export const usePhase2Store = create<Phase2State>((set, get) => ({
+export const useBodyStore = create<BodyState>((set, get) => ({
   // Initial data
-  organs: PHASE2_ORGANS,
-  systems: PHASE2_SYSTEMS,
+  organs: ORGANS,
+  systems: SYSTEMS,
   systemColors: SYSTEM_COLORS,
 
-  // Initial state (matching vanilla Phase 2)
+  // Initial state
   selectedOrgan: null,
   hoveredOrgan: null,
   isFocusMode: false,
+  isResetting: false,
   isolationMode: 'none',
   isolatedSystemId: null,
   isolatedOrganId: null,
@@ -108,7 +111,7 @@ export const usePhase2Store = create<Phase2State>((set, get) => ({
     const organ = getOrganById(organId);
     if (!organ) return;
 
-    const { selectedOrgan, isFocusMode, isolationMode, originalMaterials } = get();
+    const { selectedOrgan, isolationMode, originalMaterials, isFocusMode } = get();
 
     // Deselect previous organ if different
     if (selectedOrgan && selectedOrgan.id !== organId) {
@@ -125,6 +128,11 @@ export const usePhase2Store = create<Phase2State>((set, get) => ({
 
     // Update state
     set({ selectedOrgan: organ });
+
+    // If focus mode is active, move camera to organ
+    if (isFocusMode) {
+      get().focusOnOrgan(organId);
+    }
 
     // Handle isolation mode
     if (isolationMode === 'system') {
@@ -184,34 +192,29 @@ export const usePhase2Store = create<Phase2State>((set, get) => ({
     set({ hoveredOrgan: null });
   },
 
-  // Toggle focus mode
+  // Toggle focus mode (triggered by F key)
   toggleFocusMode: () => {
-    const { isFocusMode, selectedOrgan } = get();
+    const { isFocusMode } = get();
     const newFocusMode = !isFocusMode;
-
-    set({ isFocusMode: newFocusMode });
-
-    // Focus on selected organ if turning on
-    if (newFocusMode && selectedOrgan) {
-      get().focusOnOrgan(selectedOrgan.id);
-    }
+    set({ isFocusMode: newFocusMode, isResetting: false });
   },
 
   // Focus on organ (camera target)
+  // Camera positioning is now handled by CameraFocus component
+  // which has access to the actual THREE.js mesh for bounding box calculation
+  // This function is kept for compatibility but no longer sets cameraTarget
   focusOnOrgan: (organId: string) => {
     const organ = getOrganById(organId);
     if (!organ) return;
+    // Camera positioning is now handled by CameraFocus component
+  },
 
-    // Calculate target camera position
-    const offset = 1.0;
-    const targetPosition = {
-      x: organ.position.x + offset,
-      y: organ.position.y + 0.2,
-      z: organ.position.z + offset
-    };
-
-    // This will be used by the camera component
-    set({ cameraTarget: targetPosition });
+  // Reset camera to default (triggered by D key)
+  resetCamera: () => {
+    // Deselect organ to close popup
+    get().deselectOrgan();
+    // Set resetting flag to trigger smooth reset animation
+    set({ isResetting: true, isFocusMode: false });
   },
 
   // Toggle isolation mode (none -> system -> organ -> none)
@@ -261,7 +264,7 @@ export const usePhase2Store = create<Phase2State>((set, get) => ({
   // Show all systems
   showAll: () => {
     set({
-      visibleSystems: new Set(PHASE2_SYSTEMS.map(s => s.id)),
+      visibleSystems: new Set(SYSTEMS.map(s => s.id)),
       isolatedSystemId: null,
       isolatedOrganId: null,
       isolationMode: 'none'
@@ -312,7 +315,7 @@ export const usePhase2Store = create<Phase2State>((set, get) => ({
   // Toggle all systems
   toggleAllSystems: () => {
     const { visibleSystems } = get();
-    const allVisible = visibleSystems.size === PHASE2_SYSTEMS.length;
+    const allVisible = visibleSystems.size === SYSTEMS.length;
 
     if (allVisible) {
       get().disableAllSystems();
@@ -328,7 +331,7 @@ export const usePhase2Store = create<Phase2State>((set, get) => ({
     if (isolationMode !== 'none') {
       get().showAll();
     }
-    set({ visibleSystems: new Set(PHASE2_SYSTEMS.map(s => s.id)) });
+    set({ visibleSystems: new Set(SYSTEMS.map(s => s.id)) });
   },
 
   // Disable all systems
@@ -388,12 +391,13 @@ export const usePhase2Store = create<Phase2State>((set, get) => ({
     get().restoreAllOriginals();
     set({
       isFocusMode: false,
+      isResetting: false,
       isolationMode: 'none',
       isolatedSystemId: null,
       isolatedOrganId: null,
       hoveredOrgan: null,
       visibleSystems: new Set(['skeletal', 'nervous', 'circulatory', 'digestive', 'respiratory']),
-      highlightedOrgans: {}
+      highlightedOrgans: {},
     });
   }
 }));

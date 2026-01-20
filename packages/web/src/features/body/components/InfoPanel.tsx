@@ -1,13 +1,13 @@
 /**
- * Phase 2 Info Panel Component
+ * Info Panel Component
  * Shows selected organ information
- * Tailwind-styled UI matching vanilla Phase 2 behavior
+ * Tailwind-styled UI
  */
 
-import { usePhase2Store } from '@/store/usePhase2Store';
+import { useBodyStore } from '../store/useBodyStore';
 
-export default function Phase2InfoPanel() {
-  const { selectedOrgan, deselectOrgan } = usePhase2Store();
+export function InfoPanel() {
+  const { selectedOrgan, deselectOrgan } = useBodyStore();
 
   if (!selectedOrgan) {
     return null;
@@ -39,13 +39,6 @@ export default function Phase2InfoPanel() {
         <div>
           <span className="text-xs text-gray-400 uppercase tracking-wide">Function</span>
           <p className="text-sm mt-1">{organ.function}</p>
-        </div>
-
-        <div>
-          <span className="text-xs text-gray-400 uppercase tracking-wide">Position</span>
-          <p className="text-xs font-mono mt-1 text-gray-300">
-            x: {organ.position.x.toFixed(2)}, y: {organ.position.y.toFixed(2)}, z: {organ.position.z.toFixed(2)}
-          </p>
         </div>
 
         <div className="pt-2 border-t border-gray-700">

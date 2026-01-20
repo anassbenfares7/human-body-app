@@ -1,14 +1,14 @@
 /**
- * Phase 2 System Controls Component
+ * System Controls Component
  * Tailwind-styled UI for toggling body systems
- * Matches vanilla Phase 2 checkbox behavior
+ * Matches checkbox behavior
  */
 
-import { usePhase2Store } from '@/store/usePhase2Store';
-import { PHASE2_SYSTEMS, SYSTEM_IDS } from '@/data/phase2Systems';
+import { useBodyStore } from '../store/useBodyStore';
+import { SYSTEMS, SYSTEM_IDS } from '../data/systems';
 
-export default function Phase2SystemControls() {
-  const { isSystemVisible, toggleSystemVisibility } = usePhase2Store();
+export function SystemControls() {
+  const { isSystemVisible, toggleSystemVisibility } = useBodyStore();
 
   const handleToggle = (systemId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     toggleSystemVisibility(systemId, e.target.checked);
@@ -18,7 +18,7 @@ export default function Phase2SystemControls() {
     <div className="absolute top-20 left-4 bg-gray-900/90 backdrop-blur-sm rounded-lg p-4 text-white shadow-xl max-w-xs">
       <h3 className="text-sm font-semibold mb-3 text-gray-300">Body Systems</h3>
       <div className="space-y-2">
-        {PHASE2_SYSTEMS.map((system, index) => {
+        {SYSTEMS.map((system, index) => {
           const isVisible = isSystemVisible(system.id);
           const keyNum = index + 1;
 
@@ -50,28 +50,6 @@ export default function Phase2SystemControls() {
             </label>
           );
         })}
-      </div>
-
-      {/* Keyboard hints */}
-      <div className="mt-4 pt-3 border-t border-gray-700">
-        <div className="text-xs text-gray-400 space-y-1">
-          <div className="flex items-center gap-2">
-            <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">F</kbd>
-            <span>Toggle Focus Mode</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">D</kbd>
-            <span>Reset to Default</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">I</kbd>
-            <span>Toggle Isolation Mode</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">A</kbd>
-            <span>Toggle All Systems</span>
-          </div>
-        </div>
       </div>
     </div>
   );

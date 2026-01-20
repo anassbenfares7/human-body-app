@@ -1,6 +1,6 @@
 /**
- * Phase 2 Keyboard Controls Component
- * Handles keyboard shortcuts matching vanilla Phase 2 exactly:
+ * Keyboard Controls Component
+ * Handles keyboard shortcuts:
  * - F: Toggle focus mode
  * - D: Reset to default
  * - I: Toggle isolation mode (none -> system -> organ -> none)
@@ -9,17 +9,18 @@
  */
 
 import { useEffect } from 'react';
-import { usePhase2Store } from '@/store/usePhase2Store';
-import { SYSTEM_IDS } from '@/data/phase2Systems';
+import { useBodyStore } from '../store/useBodyStore';
+import { SYSTEM_IDS } from '../data/systems';
 
-export default function Phase2KeyboardControls() {
+export default function KeyboardControls() {
   const {
     toggleFocusMode,
+    resetCamera,
     resetToDefault,
     toggleIsolationMode,
     toggleSystemQuick,
     toggleAllSystems
-  } = usePhase2Store();
+  } = useBodyStore();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -35,10 +36,10 @@ export default function Phase2KeyboardControls() {
         return;
       }
 
-      // D key - Reset to default
+      // D key - Reset camera to default
       if (event.key === 'd' || event.key === 'D') {
         event.preventDefault();
-        resetToDefault();
+        resetCamera();
         return;
       }
 
@@ -70,7 +71,7 @@ export default function Phase2KeyboardControls() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toggleFocusMode, resetToDefault, toggleIsolationMode, toggleAllSystems, toggleSystemQuick]);
+  }, [toggleFocusMode, resetCamera, resetToDefault, toggleIsolationMode, toggleAllSystems, toggleSystemQuick]);
 
   return null;
 }

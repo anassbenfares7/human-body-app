@@ -1,30 +1,30 @@
 /**
- * Phase 2 Organ Mesh Component
+ * Organ Mesh Component
  * Renders individual organs with placeholder geometry
- * Matches vanilla Phase 2 visual feedback exactly
+ * Matches visual feedback exactly
  */
 
 import { useRef, useEffect, useMemo } from 'react';
 import { Mesh, Material } from 'three';
 import { useThree } from '@react-three/fiber';
-import { usePhase2Store } from '@/store/usePhase2Store';
-import { Phase2Organ } from '@/data/phase2Organs';
+import { useBodyStore } from '../store/useBodyStore';
+import { Organ } from '../data/organs';
 
-interface Phase2OrganMeshProps {
-  organ: Phase2Organ;
+interface OrganMeshProps {
+  organ: Organ;
   onClick?: (organId: string) => void;
   onHover?: (organId: string | null) => void;
 }
 
-export default function Phase2OrganMesh({ organ, onClick, onHover }: Phase2OrganMeshProps) {
+export default function OrganMesh({ organ, onClick, onHover }: OrganMeshProps) {
   const meshRef = useRef<Mesh>(null);
   const materialRef = useRef<Material>(null);
-  const { highlightedOrgans, isOrganVisible, storeOriginalMaterial } = usePhase2Store();
+  const { highlightedOrgans, isOrganVisible, storeOriginalMaterial } = useBodyStore();
 
   const isVisible = isOrganVisible(organ.id);
   const highlight = highlightedOrgans[organ.id];
 
-  // Create geometry based on organ type (matching vanilla Phase 2)
+  // Create geometry based on organ type
   const geometry = useMemo(() => {
     switch (organ.geometry) {
       case 'sphere':
@@ -63,7 +63,7 @@ export default function Phase2OrganMesh({ organ, onClick, onHover }: Phase2Organ
     meshRef.current.visible = true;
 
     if (highlight) {
-      // Apply highlight based on type (matching vanilla Phase 2)
+      // Apply highlight based on type
       switch (highlight.type) {
         case 'selected':
           meshRef.current.scale.set(

@@ -1,28 +1,28 @@
 /**
- * Phase 2 System Layer Component
+ * System Layer Component
  * Renders all organs for a specific body system
- * Matches vanilla Phase 2 SystemManager behavior
+ * Matches SystemManager behavior
  */
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { usePhase2Store } from '@/store/usePhase2Store';
-import { PHASE2_ORGANS } from '@/data/phase2Organs';
-import { Phase2Organ } from '@/data/phase2Organs';
-import Phase2OrganMesh from './Phase2OrganMesh';
+import { useBodyStore } from '../store/useBodyStore';
+import { ORGANS } from '../data/organs';
+import { Organ } from '../data/organs';
+import OrganMesh from './OrganMesh';
 
-interface Phase2SystemLayerProps {
+interface SystemLayerProps {
   systemId: string;
 }
 
-export default function Phase2SystemLayer({ systemId }: Phase2SystemLayerProps) {
+export default function SystemLayer({ systemId }: SystemLayerProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const { isSystemVisible, toggleSystemVisibility } = usePhase2Store();
+  const { isSystemVisible, toggleSystemVisibility } = useBodyStore();
 
   const isVisible = isSystemVisible(systemId);
 
   // Get organs for this system
-  const systemOrgans = PHASE2_ORGANS.filter(organ => organ.systemId === systemId);
+  const systemOrgans = ORGANS.filter(organ => organ.systemId === systemId);
 
   // Update group visibility when state changes
   useEffect(() => {
@@ -32,11 +32,11 @@ export default function Phase2SystemLayer({ systemId }: Phase2SystemLayerProps) 
   }, [isVisible]);
 
   const handleOrganClick = (organId: string) => {
-    usePhase2Store.getState().selectOrgan(organId);
+    useBodyStore.getState().selectOrgan(organId);
   };
 
   const handleOrganHover = (organId: string | null) => {
-    usePhase2Store.getState().setHoveredOrgan(organId);
+    useBodyStore.getState().setHoveredOrgan(organId);
   };
 
   return (
@@ -46,7 +46,7 @@ export default function Phase2SystemLayer({ systemId }: Phase2SystemLayerProps) 
       visible={isVisible}
     >
       {systemOrgans.map(organ => (
-        <Phase2OrganMesh
+        <OrganMesh
           key={organ.id}
           organ={organ}
           onClick={handleOrganClick}

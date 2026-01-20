@@ -1,9 +1,9 @@
 /**
- * Phase 2 Organs Data
- * 5 organs with exact positions from vanilla Phase 2
+ * Body Organs Data
+ * 5 organs with exact positions
  */
 
-export interface Phase2Organ {
+export interface Organ {
   id: string;
   name: string;
   system: string;
@@ -18,7 +18,7 @@ export interface Phase2Organ {
   groupId: string;
 }
 
-export const PHASE2_ORGANS: Phase2Organ[] = [
+export const ORGANS: Organ[] = [
   {
     id: 'brain',
     name: 'Brain',
@@ -67,7 +67,7 @@ export const PHASE2_ORGANS: Phase2Organ[] = [
     system: 'Digestive',
     function: 'Filters blood and produces bile',
     meshName: 'Liver',
-    position: { x: 0.2, y: 0.4, z: 0 },
+    position: { x: -0.15, y: 0.4, z: 0 },
     color: 0xA87868,
     geometry: 'box',
     size: 0.22,
@@ -81,7 +81,7 @@ export const PHASE2_ORGANS: Phase2Organ[] = [
     system: 'Digestive',
     function: 'Breaks down food with acids',
     meshName: 'Stomach',
-    position: { x: -0.15, y: 0.3, z: 0 },
+    position: { x: 0.2, y: 0.3, z: 0 },
     color: 0xC4B090,
     geometry: 'sphere',
     size: 0.18,
@@ -92,7 +92,7 @@ export const PHASE2_ORGANS: Phase2Organ[] = [
 ];
 
 // Create organ-to-system mapping
-export const ORGAN_TO_SYSTEM_MAP = PHASE2_ORGANS.reduce((acc, organ) => {
+export const ORGAN_TO_SYSTEM_MAP = ORGANS.reduce((acc, organ) => {
   acc[organ.id] = organ.systemId;
   return acc;
 }, {} as Record<string, string>);
